@@ -17,6 +17,8 @@ canvas { background: #fff; border-radius: 8px; padding: 1rem; }
 <canvas id="cpuChart" width="400" height="200"></canvas>
 <canvas id="memChart" width="400" height="200"></canvas>
 </div>
+
+
 <script>
 const cpuCtx = document.getElementById('cpuChart').getContext('2d');
 const memCtx = document.getElementById('memChart').getContext('2d');
@@ -76,7 +78,6 @@ memChart.update();
 console.error('Polling error', err);
 }
 }
-
 
 // initial poll and then every 5 seconds
 poll();
