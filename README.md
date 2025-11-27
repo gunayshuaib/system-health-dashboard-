@@ -60,8 +60,8 @@ kubectl port-forward deployment/system-health-dashboard 5000:5000
 
 ```bash
 helm upgrade --install system-health-dashboard charts/system-health-dashboard \
-  --set image.repository=ghcr.io/ORG/REPO \
-  --set image.tag=latest
+  --set image.repository=docker.io/gunayshuaib/system-health-dashboard \
+  --set image.tag=v1
 ```
 
 ### 2. Check resources
