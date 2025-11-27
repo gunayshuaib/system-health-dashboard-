@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>System Health Dashboard</title>
+    <style>
+        body {
+            font-family: Arial;
+            margin: 40px;
+            background: #f7f7f7;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            width: 300px;
+            box-shadow: 0px 2px 6px rgba(0,0,0,0.1);
+        }
+        .value {
+            font-size: 28px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>System Health Dashboard</h1>
+
+    <div class="card">
+        <h3>CPU Usage</h3>
+        <div id="cpu" class="value">-- %</div>
+    </div>
+
+    <div class="card">
+        <h3>RAM Usage</h3>
+        <div id="ram" class="value">-- %</div>
+    </div>
+
+    <script>
+        async function loadMetrics() {
+            let r = await fetch("/metrics");
+            let data = await r.json();
+
+            document.getElementById("cpu").innerText = data.cpu + "%";
+            document.getElementById("ram").innerText = data.ram + "%";
+        }
+
+        setInterval(loadMetrics, 2000);
+        loadMetrics();
+    </script>
+</body>
+</html>
