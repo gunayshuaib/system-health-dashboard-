@@ -14,7 +14,7 @@ app: system-health-dashboard
 spec:
 containers:
 - name: dashboard
-image: ghcr.io/ORG/REPO:latest
+image: docker.io/gunayshuaib/system-health-dashboard:v1
 ports:
 - containerPort: 5000
 readinessProbe:
