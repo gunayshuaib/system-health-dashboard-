@@ -1,0 +1,6 @@
+apiVersion: v2
+name: system-health-dashboard
+description: A simple Helm chart for the system-health-dashboard app
+type: application
+version: 0.1.0
+appVersion: "latest"

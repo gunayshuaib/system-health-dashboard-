@@ -1,51 +1,86 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
 <head>
-    <title>System Health Dashboard</title>
-    <style>
-        body {
-            font-family: Arial;
-            margin: 40px;
-            background: #f7f7f7;
-        }
-        .card {
-            background: white;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 10px;
-            width: 300px;
-            box-shadow: 0px 2px 6px rgba(0,0,0,0.1);
-        }
-        .value {
-            font-size: 28px;
-            font-weight: bold;
-        }
-    </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>System Health Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+body { font-family: Arial, sans-serif; padding: 1rem; }
+#charts { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+canvas { background: #fff; border-radius: 8px; padding: 1rem; }
+</style>
 </head>
 <body>
-    <h1>System Health Dashboard</h1>
+<h1>System Health Dashboard</h1>
+<div id="charts">
+<canvas id="cpuChart" width="400" height="200"></canvas>
+<canvas id="memChart" width="400" height="200"></canvas>
+</div>
+<script>
+const cpuCtx = document.getElementById('cpuChart').getContext('2d');
+const memCtx = document.getElementById('memChart').getContext('2d');
 
-    <div class="card">
-        <h3>CPU Usage</h3>
-        <div id="cpu" class="value">-- %</div>
-    </div>
 
-    <div class="card">
-        <h3>RAM Usage</h3>
-        <div id="ram" class="value">-- %</div>
-    </div>
+function createLine(ctx, label) {
+return new Chart(ctx, {
+type: 'line',
+data: {
+labels: [],
+datasets: [{
+label: label,
+data: [],
+fill: false,
+tension: 0.2
+}]
+},
+options: {
+scales: { x: { display: true }, y: { suggestedMin: 0, suggestedMax: 100 } }
+}
+});
+}
 
-    <script>
-        async function loadMetrics() {
-            let r = await fetch("/metrics");
-            let data = await r.json();
 
-            document.getElementById("cpu").innerText = data.cpu + "%";
-            document.getElementById("ram").innerText = data.ram + "%";
-        }
+const cpuChart = createLine(cpuCtx, 'CPU %');
+const memChart = createLine(memCtx, 'Memory %');
 
-        setInterval(loadMetrics, 2000);
-        loadMetrics();
-    </script>
+
+async function poll() {
+try {
+const res = await fetch('/metrics');
+const json = await res.json();
+const t = new Date(json.timestamp).toLocaleTimeString();
+
+
+// push to CPU chart
+cpuChart.data.labels.push(t);
+cpuChart.data.datasets[0].data.push(json.cpu);
+if (cpuChart.data.labels.length > 30) {
+cpuChart.data.labels.shift();
+cpuChart.data.datasets[0].data.shift();
+}
+cpuChart.update();
+
+
+// push to MEM chart
+memChart.data.labels.push(t);
+memChart.data.datasets[0].data.push(json.memory);
+if (memChart.data.labels.length > 30) {
+memChart.data.labels.shift();
+memChart.data.datasets[0].data.shift();
+}
+memChart.update();
+
+
+} catch (err) {
+console.error('Polling error', err);
+}
+}
+
+
+// initial poll and then every 5 seconds
+poll();
+setInterval(poll, 5000);
+</script>
 </body>
 </html>

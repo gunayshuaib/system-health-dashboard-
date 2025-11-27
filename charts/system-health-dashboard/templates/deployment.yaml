@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+name: {{ include "system-health-dashboard.fullname" . }}
+labels:
+app: {{ include "system-health-dashboard.name" . }}
+spec:
+replicas: {{ .Values.replicaCount }}
+selector:
+matchLabels:
+app: {{ include "system-health-dashboard.name" . }}
+template:
+metadata:
+labels:
+app: {{ include "system-health-dashboard.name" . }}
+spec:
+containers:
+- name: dashboard
+image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+imagePullPolicy: {{ .Values.image.pullPolicy }}
+ports:
+- containerPort: 5000
+readinessProbe:
+httpGet:
+path: /
+port: 5000
+initialDelaySeconds: 5
+periodSeconds: 10
+livenessProbe:
+httpGet:
+path: /
+port: 5000
+initialDelaySeconds: 15
+periodSeconds: 20
+resources: {{ toYaml .Values.resources | nindent 10 }}

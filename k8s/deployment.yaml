@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+name: system-health-dashboard
+spec:
+replicas: 1
+selector:
+matchLabels:
+app: system-health-dashboard
+template:
+metadata:
+labels:
+app: system-health-dashboard
+spec:
+containers:
+- name: dashboard
+image: ghcr.io/ORG/REPO:latest
+ports:
+- containerPort: 5000
+readinessProbe:
+httpGet:
+path: /
+port: 5000
+initialDelaySeconds: 5
+periodSeconds: 10
+livenessProbe:
+httpGet:
+path: /
+port: 5000
+initialDelaySeconds: 15
+periodSeconds: 20
